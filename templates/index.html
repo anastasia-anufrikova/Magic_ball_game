@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магический Шар Предсказаний</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for a more mystical feel */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); /* Dark gradient background */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .magic-ball-container {
+            background-color: #2d3748; /* Darker background for the card */
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+            max-width: 500px;
+            width: 100%;
+            padding: 2.5rem; /* Increased padding */
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+            display: flex; /* Use flexbox for internal layout */
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center; /* Center items horizontally */
+        }
+        .magic-ball-title {
+            color: #e2e8f0; /* Light text color */
+            font-size: 2.5rem; /* Larger title */
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Text shadow for depth */
+        }
+        .magic-ball-image-wrapper {
+            position: relative; /* For positioning the answer inside */
+            width: 100%; /* Takes full available width of container */
+            max-width: 350px; /* Max width of the ball */
+            aspect-ratio: 1 / 1; /* Maintain square aspect ratio for the ball */
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .magic-ball-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Preserves image aspect ratio */
+            border-radius: 50%; /* Makes the image round if it's square */
+            /* Add shadow for depth effect */
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.7));
+        }
+        .answer-overlay {
+            position: absolute; /* Position over the image */
+            top: 39%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Precise centering */
+            width: 60%; /* Width of the answer area inside the ball */
+            padding: 0.5rem;
+            /* Use a slightly lighter, more opaque background for better contrast on blue image */
+            #background-color: rgba(0, 0, 0, 0.7);
+            #border-radius: 0.75rem;
+            color: #E0FFFF; /* Very light text color for contrast */
+            font-size: 1.25rem; /* Font size of the answer */
+            font-weight: 600;
+            text-align: center;
+            word-wrap: break-word; /* Wrap long words */
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px; /* Minimum height for the answer */
+            #box-shadow: 0 0 15px rgba(99, 179, 237, 0.5); /* Stronger blue glow */
+        }
+        .input-field {
+            width: 100%;
+            padding: 1rem 1.25rem; /* Larger padding for input */
+            border-radius: 0.75rem; /* Rounded input */
+            border: 1px solid #4a5568; /* Darker border */
+            background-color: #1a202c; /* Dark input background */
+            color: #e2e8f0;
+            font-size: 1.125rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #63b3ed; /* Blue border on focus */
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.5); /* Blue glow on focus */
+        }
+        .ask-button {
+            background: linear-gradient(90deg, #63b3ed 0%, #4299e1 100%); /* Blue gradient button */
+            color: white;
+            padding: 1rem 2rem; /* Larger padding for button */
+            border-radius: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4); /* Button shadow */
+            border: none;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+        .ask-button:hover {
+            transform: translateY(-2px); /* Slight lift on hover */
+            box-shadow: 0 8px 20px rgba(66, 153, 225, 0.6); /* Enhanced shadow on hover */
+        }
+        .question-display {
+            color: #cbd5e0; /* Slightly lighter for question */
+            font-size: 1.125rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="magic-ball-container">
+        <h1 class="magic-ball-title">Магический Шар Предсказаний</h1>
+
+        <div class="magic-ball-image-wrapper">
+            <!-- Image of the magic ball -->
+            <img src="{{ url_for('static', filename='images/magic_ball.png') }}" alt="Магический Шар" class="magic-ball-image">
+
+            <!-- Placeholder for the answer to be displayed inside the ball -->
+            {% if answer %}
+                <div id="answerOverlay" class="answer-overlay">
+                    {{ answer }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Form for submitting the question -->
+        <form method="POST" class="w-full">
+            <input type="text" id="questionInput" name="question" class="input-field" placeholder="Задайте свой вопрос..." value="{{ question if question }}">
+            <button type="submit" id="askButton" class="ask-button">Спросить Шар</button>
+        </form>
+
+        <!-- Display the question -->
+        {% if question %}
+            <p class="question-display">Ваш вопрос: "{{ question }}"</p>
+        {% endif %}
+    </div>
+</body>
+</html>
